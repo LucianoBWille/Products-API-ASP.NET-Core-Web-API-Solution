@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.OpenApi.Models;
+using Products_API_ASP.NET_Core_Web_API.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,12 +11,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var products = new List<Products_API_ASP.NET_Core_Web_API.Product>
+var products = new List<Product>
 {
-    new Products_API_ASP.NET_Core_Web_API.Product { Id = 1, Nome = "Banana", Preco = 4.6f, Quantidade = 7 },
-    new Products_API_ASP.NET_Core_Web_API.Product { Id = 2, Nome = "Pera", Preco = 4.6f, Quantidade = 7 },
-    new Products_API_ASP.NET_Core_Web_API.Product { Id = 3, Nome = "Maçã", Preco = 4.6f, Quantidade = 7 },
-    new Products_API_ASP.NET_Core_Web_API.Product { Id = 4, Nome = "Melão", Preco = 4.6f, Quantidade = 7 }
+    new Product { ProductID = 1, Nome = "Banana", Preco = 4.6f, Quantidade = 7 },
+    new Product { ProductID = 2, Nome = "Pera", Preco = 4.6f, Quantidade = 7 },
+    new Product { ProductID = 3, Nome = "Maçã", Preco = 4.6f, Quantidade = 7 },
+    new Product { ProductID = 4, Nome = "Melão", Preco = 4.6f, Quantidade = 7 }
 };
 
 builder.Services.AddSingleton(products);
@@ -35,15 +36,15 @@ var app = builder.Build();
 
 app.MapGet("/products", () =>
 {
-    var productService = app.Services.GetRequiredService<List<Products_API_ASP.NET_Core_Web_API.Product>>();
+    var productService = app.Services.GetRequiredService<List<Product>>();
     return Results.Ok(productService);
 });
 
 app.MapGet("/products/{id}", (int id, HttpRequest request) =>
 {
-    var productService = app.Services.GetRequiredService<List<Products_API_ASP.NET_Core_Web_API.Product>>();
+    var productService = app.Services.GetRequiredService<List<Product>>();
 
-    var product = productService.FirstOrDefault(p => p.Id == id);
+    var product = productService.FirstOrDefault(p => p.ProductID == id);
 
     if(product == null)
     {
@@ -53,22 +54,22 @@ app.MapGet("/products/{id}", (int id, HttpRequest request) =>
     return Results.Ok(product);
 });
 
-app.MapPost("/products", (Products_API_ASP.NET_Core_Web_API.Product product) =>
+app.MapPost("/products", (Product product) =>
 {
-    var productService = app.Services.GetRequiredService<List<Products_API_ASP.NET_Core_Web_API.Product>>();
+    var productService = app.Services.GetRequiredService<List<Product>>();
 
-    product.Id = productService.Max(p => p.Id) + 1;
+    product.ProductID = productService.Max(p => p.ProductID) + 1;
 
     productService.Add(product);
 
-    return Results.Created($"/products/{product.Id}", product);
+    return Results.Created($"/products/{product.ProductID}", product);
 });
 
-app.MapPut("/products/{id}", (int id, Products_API_ASP.NET_Core_Web_API.Product product) =>
+app.MapPut("/products/{id}", (int id, Product product) =>
 {
-    var productService = app.Services.GetRequiredService<List<Products_API_ASP.NET_Core_Web_API.Product>>();
+    var productService = app.Services.GetRequiredService<List<Product>>();
 
-    var existingProduct = productService.FirstOrDefault(p => p.Id == id);
+    var existingProduct = productService.FirstOrDefault(p => p.ProductID == id);
 
     if (existingProduct == null)
     {
@@ -84,9 +85,9 @@ app.MapPut("/products/{id}", (int id, Products_API_ASP.NET_Core_Web_API.Product 
 
 app.MapDelete("/products/{id}", (int id) =>
 {
-    var productService = app.Services.GetRequiredService<List<Products_API_ASP.NET_Core_Web_API.Product>>();
+    var productService = app.Services.GetRequiredService<List<Product>>();
 
-    var existingProduct = productService.FirstOrDefault(p => p.Id == id);
+    var existingProduct = productService.FirstOrDefault(p => p.ProductID == id);
 
     if (existingProduct == null)
     {
